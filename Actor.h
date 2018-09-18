@@ -19,6 +19,8 @@ public:
 	bool hasShotAlready() const;
 	void setHasShotAlready(bool hasShot);
 	virtual bool move(char key) = 0;
+	void incrementActorStrength() { m_strength++; }
+
 private:
 	int m_hp;
 	int m_strength;

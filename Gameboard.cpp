@@ -4,9 +4,10 @@
 #include "Actor.h"
 #include "Laser.h"
 #include "Hero.h"
+#include "Game.h"
 
-#include <conio.h>
 #include <iostream>
+using namespace std;
 
 void Gameboard::drawBorder(Screen& screen) {
 	//top side
@@ -67,19 +68,29 @@ void Gameboard::displayStats(Screen& screen, Hero * hero) {
 	screen.printString("Weapon: |");
 }
 
-void Gameboard::displayVictory()
+void Gameboard::nextLevel(Screen & screen, Game*game)
 {
-
+	screen.clear();
+	screen.gotoXY(0,0);
+	string level = to_string(game->getLevel());
+	string message = "\tLevel completed.\n\tMoving on to Level " + level;
+	message += "...\n";
+	message += "\t+1 Alien @_@\n";
+	screen.printString(message);
 }
 
-void Gameboard::display(Screen& screen, int x, int y)
+void Gameboard::displayScore(Screen & screen, Game * game)
 {
-
+	screen.gotoXY(0,0);
+	string message = "GAME OVER!\n";
+	message += "Level: " + to_string(game->getLevel()) + "\n";
+	message += "Score: " + to_string(game->getScore()) + "\n";
+	float floatTime = (float)game->getTimePlayed() / 1000;
+	floatTime = (floatTime*100.0) / 100.0;
+	message += "Time Played: " + to_string(floatTime) + " seconds\n";
+	screen.printString(message);
 }
 
-void Gameboard::addLaser(int row, int column) {
-	//m_lasers.push_back(new Laser(row, column));
-}
 
 void Gameboard::drawActor(Screen& screen, Actor * actor) {
 	screen.gotoXY(actor->getPosition().column, actor->getPosition().row);

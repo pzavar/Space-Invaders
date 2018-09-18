@@ -12,9 +12,10 @@
 using namespace std;
 
 
-Game::Game(int width, int height)
+Game::Game(int numberOfStartingAliens, int width, int height)
 	: m_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
 {
+	m_numberOfStartingAliens = numberOfStartingAliens;
 }
 
 Game::~Game() {
@@ -36,7 +37,7 @@ void Game::initState() {
 	//CHANGE. POORLY MADE ALIENS 
 	//CHANGE. POORLY MADE ALIENS 
 	//CHANGE. POORLY MADE ALIENS 
-	for (int i = 1; i < 5; i++) {
+	for (int i = 1; i < m_numberOfStartingAliens + 1; i++) {
 		m_aliens.push_back(new Alien(3, i * 5));
 	}
 }
@@ -45,6 +46,7 @@ void Game::initState() {
 
 void Game::play()
 {
+	Timer timePlayed;
 	initState();
 	/*
 	// init everything
@@ -80,7 +82,18 @@ void Game::play()
 		m_board.displayStats(m_screen, m_hero);
 
 		if (m_aliens.empty()) {
-			m_board.displayVictory();
+			incLevel();
+			m_board.nextLevel(m_screen,this);
+			for (int i = 1; i < m_numberOfStartingAliens + 1; i++) {
+				m_aliens.push_back(new Alien(3, i * 5));
+			}
+			Timer waitTime;
+			while (waitTime.elapsed() < 2000)
+			{
+
+			}
+
+			continue;
 			//die("DIE");
 		}
 
@@ -122,10 +135,22 @@ void Game::play()
 			m_board.drawLaser(m_screen, laserToDisplay);
 		}
 
-		//Move aliens
+		//Move aliens left or right
 		for (unsigned i = 0; i < m_aliens.size(); i++) {
 			Alien *alienToMove = m_aliens.at(i);
 			alienToMove->move('&');
+		}
+		//move aliens down when time elapses
+		if (timerDown.elapsed() > 1000)
+		{
+			for (unsigned i = 0; i < m_aliens.size(); i++) {
+				Alien * alien = m_aliens.at(i);
+				alien->move('d');
+			}
+			if (m_aliens.front()->getPosition().row == m_hero->getPosition().row) {
+				m_aliens.front()->collide(m_hero);
+			}
+			timerDown.start();
 		}
 
 		//Move laser
@@ -144,6 +169,9 @@ void Game::play()
 			}
 		}
 
+		m_screen.gotoXY(0, 0);
+		m_screen.printString(to_string(m_score));
+
 		//Check collisions
 		for (unsigned i = 0; i < m_lasers.size(); i++) {
 			Laser *laserToCheck = m_lasers.at(i);
@@ -156,15 +184,22 @@ void Game::play()
 				int alienRow = alienToCheck->getPosition().row;
 				int alienColumn = alienToCheck->getPosition().column;
 				if ((abs(alienRow - laserRow) <= 1) && (abs(alienColumn - laserColumn) == 0) && laserToCheck->isFriendly()) {
+					//We save hitvalue before collide potentially deletes actor
+					int hitvalue = alienToCheck->getHitValue();
 					laserToCheck->collide(alienToCheck);
 					m_lasers.erase(m_lasers.begin() + i);
 					if (alienToCheck->getHP() <= 0) {
 						m_aliens.erase(m_aliens.begin() + j);
 					}
+					if (m_score == 150) {
+						m_score += 0;
+					}
+					m_score += hitvalue;
 					cout << "ALIEN HIT" << endl;
 				}
 			}
-
+			m_screen.gotoXY(0, 0);
+			m_screen.printString(to_string(m_score));
 			//Check collision with hero
 			//Shouldn't use absolute value
 			//The logic checks if the laser is about to hit
@@ -183,19 +218,6 @@ void Game::play()
 				}
 			}
 		}
-
-		if (timerDown.elapsed() > 500)
-		{
-			for (unsigned i = 0; i < m_aliens.size(); i++) {
-				Alien * alien = m_aliens.at(i);
-				alien->move('d');
-			}
-			if (m_aliens.front()->getPosition().row == m_hero->getPosition().row) {
-				m_aliens.front()->collide(m_hero);
-			}
-			timerDown.start();
-		}
-
 		while (timer.elapsed() < 100) {
 		}
 		timer.start();
@@ -203,8 +225,8 @@ void Game::play()
 
 	//system("pause");
 	m_screen.clear();
-	displayPrompt("Level completed. Press Enter for next level\n.");
-
+	setTimePlayed(timePlayed.elapsed());
+	m_board.displayScore(m_screen, this);
 	waitForEnter();
 }
 

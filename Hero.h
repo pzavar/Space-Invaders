@@ -9,6 +9,8 @@ public:
 	virtual ~Hero();
 	void shootLaser(Game*game);
 	bool move(char key);
+	void incrementHeroStrength() {  }
+
 };
 
 #endif // HERO_H

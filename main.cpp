@@ -10,7 +10,7 @@ using namespace std;
 
 int main()
 {
-	Game g(SCREEN_WIDTH, SCREEN_HEIGHT);
+	Game g(4,SCREEN_WIDTH, SCREEN_HEIGHT);
 	g.play();
 }
 

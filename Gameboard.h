@@ -10,25 +10,20 @@ class Hero;
 class Alien;
 class Laser;
 class Actor;
+class Game;
 
 class Gameboard
 {
 public:
 	Gameboard();
 	~Gameboard();
-	void display(Screen& screen, int x, int y);
-	Hero* getHero();
-	Alien* getAlien();
-	Laser* getLaser();
 
-	void draw();
 	void drawBorder(Screen& screen);
 	void drawActor(Screen& screen, Actor * actor);
 	void drawLaser(Screen& screen, Laser * actor);
 	void displayStats(Screen& screen, Hero * hero);
-	void addLaser(int row, int column);
-	void displayVictory();
-
+	void nextLevel(Screen & screen, Game*game);
+	void displayScore(Screen & screen, Game * game);
 private:
 	Hero * m_hero;
 	vector<Alien*> m_aliens;
