@@ -4,4 +4,4 @@ Space Invaders Lite
 Coded entirely in C++ as a project with two friends. 
 
 # Demo
-![Space Invaders Lite Demo](demo/spaceinvaderslite.gif)
+![Space Invaders Lite Demo](demo/spaceinvaderslite.png)
